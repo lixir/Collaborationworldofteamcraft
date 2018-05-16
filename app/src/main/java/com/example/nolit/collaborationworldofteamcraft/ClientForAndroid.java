@@ -1,12 +1,24 @@
 package com.example.nolit.collaborationworldofteamcraft;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.Socket;
+        import org.json.JSONArray;
+        import org.json.JSONObject;
+        import org.json.simple.*;
+        import org.json.simple.parser.JSONParser;
+        import org.json.simple.parser.ParseException;
+
+
+        import java.io.*;
+        import java.net.Socket;
+        import java.util.ArrayList;
+
+        import com.example.nolit.collaborationworldofteamcraft.AndroidProjects;
+        import com.example.nolit.collaborationworldofteamcraft.User;
+
+/**
+ * добавить wait() для того чтобы не разрывать соединеение с клиентом тогда в каждом методе нужно
+ * добавить notify() ,но надо посмотреть можно ли вызвать для определеного потока
+ */
+
 
 public class ClientForAndroid implements Runnable {
     private String mServerMessage;
@@ -46,6 +58,7 @@ public class ClientForAndroid implements Runnable {
         mBufferOut = null;
         mServerMessage = null;
     }
+
 
     @Override
     public void run() {
@@ -98,22 +111,76 @@ public class ClientForAndroid implements Runnable {
 
 
     //в приложение
-    public void   joinProject(String projct){
-        //todo
+
+    /**
+     * получение номера проекта на запрос на присоединении
+     * @param id
+     */
+
+    public void joinProject(int id){
+        JSONObject json  = new JSONObject();
+        json.put("JsonMessaged", "command");
+        json.put("command", "joinProject");
+        json.put("id" , id);
     }
 
-    public String listProject(){
-        String jsonout = null;
-        return jsonout;
+
+    /**
+     * получение определеного проекта по id
+     * возращиние конструктора проекта
+     * @param id
+     * @return
+     */
+    public AndroidProjects getProject(int id){
+        AndroidProjects result = new AndroidProjects();
+        return result;
     }
 
 
-    public String search(String json){
-        // TODO: 12.03.2018
-        return json;
+    /**
+     * возвращение тоже самое из поиска только без начальных данных
+     */
+    public ArrayList<AndroidProjects> listProject(){
+        JSONObject jsonout = null;
+        ArrayList<AndroidProjects> result = new ArrayList<>();
+        jsonout.put("command", "listProject");
+        return result;
     }
 
-    public static void createProject(String json){
-        // TODO: 12.03.2018
+    /**
+     возвращение листа кострукторов проэктов
+     */
+    public AndroidProjects searchProject(String name){
+        int id=0;
+        int idLeader=0;
+        ArrayList<Users> listUsers=new ArrayList<>();
+        JSONObject json  = new JSONObject();
+        json.put("name", name);
+        json.put("command", "searchProjects");
+        AndroidProjects result=new AndroidProjects(id,name,idLeader,listUsers);
+        return result;
+    }
+
+
+
+    public static void createProject( String name, String discript, int numPeople){
+        JSONObject json  = new JSONObject();
+        json.put("JsonMessaged", "command");
+        json.put("command", "create");
+        JSONArray ar = new JSONArray();
+        JSONObject jsonAr  = new JSONObject();
+        jsonAr.put("name", name);
+        jsonAr.put("text", discript);
+        jsonAr.put("num", numPeople);
+        ar.add(jsonAr);
+        json.put("data", ar);
+    }
+
+    public User searchUser(String name){
+        JSONObject json  = new JSONObject();
+        json.put("name", name);
+        json.put("command", "searchUser");
+        User result = new User();
+        return result;
     }
 }
