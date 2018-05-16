@@ -1,5 +1,6 @@
 package com.example.nolit.collaborationworldofteamcraft;
 
+import android.app.ListActivity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,46 +45,35 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //по умолчанию тут было activity_main, но список у нас в content main
-        setContentView(R.layout.content_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//        drawer.addDrawerListener(toggle);
- //       toggle.syncState();
-
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
-
-        listItems.add(new ListItem("Title", "Name",
-                "Кол-во участников", "5", R.id.image));
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        mRecyclerView = findViewById(R.id.recyclerView);
-        mRecyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        Socket socket = new Socket();
+        //temp-begin
+        List<String> temp = new ArrayList<>();
+        for (int i = 0; i <= 15; i++){
+            temp.set(i, "project " + i);
+        }
+        //temp-end
+        try{
+            ClientForAndroid client = new ClientForAndroid(socket);
+            List<AndroidProjects> list = client.listProject();
+            List<String> names = new ArrayList<>();
+            for (int i = 0; i < list.size(); i++){
+                names.set(i, list.get(i).getNameProject());
+            }
+            GmailAdapter adapter = new GmailAdapter(this, temp /*names*/);
+        } catch (InterruptedException ex){
+            System.err.print(":(");
+        }
 
 
-        // specify an adapter (see also next example)
-        mAdapter = new MyAdapter(listItems);
-        mRecyclerView.setAdapter(mAdapter);
+
+
+
+
+
+
+
+
+
     }
 
     @Override
